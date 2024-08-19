@@ -30,7 +30,7 @@ namespace EmailBodyFunction
                 updatedBody = updatedBody.Replace("\\r\\n", " ");
                 updatedBody = updatedBody.Replace(@"&nbsp;", " ");
 
-                //Return cleaned text
+                //Return plain text
                 return (ActionResult)new OkObjectResult(new { updatedBody });
             }
             catch (Exception e)
