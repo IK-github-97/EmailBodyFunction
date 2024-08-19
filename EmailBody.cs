@@ -18,18 +18,26 @@ namespace EmailBodyFunction
         [Function("EmailBody")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequest req)
         {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
-            
-            //Parse query parameter
-            string emailBodyContent = await new StreamReader(req.Body).ReadToEndAsync();
+            try
+            {
+                _logger.LogInformation("C# HTTP trigger function processed a request.");
 
-            //Replace HTML with other characters
-            string updatedBody = Regex.Replace(emailBodyContent, "<.*?>",string.Empty);
-            updatedBody = updatedBody.Replace("\\r\\n", " ");
-            updatedBody = updatedBody.Replace(@"&nbsp;", " ");
+                //Parse query parameter
+                string emailBodyContent = await new StreamReader(req.Body).ReadToEndAsync();
 
-            //Return cleaned text
-            return (ActionResult)new OkObjectResult(new { updatedBody });
+                //Replace HTML with other characters
+                string updatedBody = Regex.Replace(emailBodyContent, "<.*?>", string.Empty);
+                updatedBody = updatedBody.Replace("\\r\\n", " ");
+                updatedBody = updatedBody.Replace(@"&nbsp;", " ");
+
+                //Return cleaned text
+                return (ActionResult)new OkObjectResult(new { updatedBody });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"An error occurred: {e.Message}");
+                return new ObjectResult(new { error = e.Message }) { StatusCode = 500 };
+            }
         }
     }
 }
